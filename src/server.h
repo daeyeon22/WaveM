@@ -1,13 +1,11 @@
-
-
 #ifndef __SERVER__
 #define __SERVER__
 #include "router.h"
 
+#define WMServer Server::inst()
+
 class Client
 {
-    enum Status { BUSY, IDLE, BLOCKED };
-
   private:
     int id;
     int stat;               // current status
@@ -17,29 +15,47 @@ class Client
     Router router;          // router
 
   public:
+    enum { BUSY, IDLE, BLOCKED, WAITING };
 
+    Client(){}
     Client(int id, int stat) :
         id(id), stat(stat) {}
 
+    void setID(int _id);
     void setCurLoc(int x, int y);
     void setDesLoc(int x, int y);
     void updateStat(int u_stat);
-    
     bool createPath();
+
+    void next();
+
+    int getX(){ return c_x; }
+    int getY(){ return c_y; }
+    int getStat(){ return stat; }
+    vector<int>::iterator begin(){ return path.vertices.begin(); };
+    vector<int>::iterator end(){ return path.vertices.end(); };
+
 };
 
 
 class Server
 {
   private:
-    static Sercver* instance;
+    static Server* instance;
     vector<Client> clients;
 
   public:
     static Server* inst();
   
-    void initClients(int numClients);
+    void initClients(int _numClients);
     void addClient();
+   
+    // getter
+    int numClients(){ return clients.size(); }
+    Client* getClient(int id){ return &clients[id]; }
+
+    void next();
+     
 };
 
 

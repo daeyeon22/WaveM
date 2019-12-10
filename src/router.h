@@ -11,6 +11,20 @@ using namespace std;
 struct Path
 {
     vector<int> vertices;
+
+    vector<int>::iterator begin(){ return vertices.begin(); }
+    vector<int>::iterator end(){ return vertices.end(); }
+    int front(){ return vertices.front(); }
+    int back(){ return vertices.back(); }
+    int size(){ return vertices.size(); }
+    
+    int pop()
+    { 
+        int front = vertices.front();
+        vertices.erase(vertices.begin());
+        return front;
+    }
+
 };
 
 class Router
@@ -36,6 +50,7 @@ class Router
 
   public:
 
+    Router(){}
 
     Router(int size)
     {
@@ -50,7 +65,8 @@ class Router
         //delete estCost;
         //delete parent;
     }
-
+    
+    void    init(int size);
     void    update(int cur, int par, int tar);
     void    pushNeighbors(int node, int end);
     void    push(int node);

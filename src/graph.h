@@ -4,13 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <map>
-
-
-#define BLOCKED -1212
-#define EMPTY -13224
-#define NONEMPTY -14543
-
-#define graph Graph::inst()
+//#define BLOCKED -1212
+//#define EMPTY -13224
+//#define NONEMPTY -14543
+#define WMGraph Graph::inst()
 
 
 using namespace std;
@@ -30,20 +27,24 @@ struct Edge
 
 struct Vertex
 {
-    
+    enum { EMPTY, NONEMPTY, BLOCKED };
+
     int id;
     int x,y; 
-    int status;
+    int stat;
 
     vector<int> adj;
 
     Vertex(){}
 
-    Vertex(int id, int x, int y, int status): 
-        id(id), x(x), y(y), status(status) {}
+    Vertex(int id, int x, int y, int stat): 
+        id(id), x(x), y(y), stat(stat) {}
+
+
+    ostream& operator << (ostream& os) { return os << "(" << x << " " << y << ")"; }
 
     void setInfo(int _id, int _x, int _y, int _stat);
-    void updateStat(int stat); 
+    void updateStat(int _stat); 
     void addAdj(int v);
     void removeAdj(int v);
 };
@@ -74,7 +75,7 @@ class Graph
     Vertex* getVertex(int id);
     Edge*   getEdge(int v1, int v2);
     int     getIndex(int x, int y);
-    
+    int     randVertex(int stat);    
     void    init(int width, int height, bool **map);
     void    createEdge(int v1, int v2, double cost);
     void    removeEdge(int v1, int v2);

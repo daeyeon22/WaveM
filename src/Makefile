@@ -21,6 +21,8 @@ LIBGOMP = -L../lib/libgomp/libgomp.a -static
 SRC = 	$(OBJECT)/main.o \
 		$(OBJECT)/bitmap.o \
 		$(OBJECT)/router.o \
+		$(OBJECT)/server.o \
+		$(OBJECT)/simulator.o \
 		$(OBJECT)/graph.o 
 
 
@@ -53,6 +55,12 @@ $(OBJECT)/router.o: router.cpp router.h
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
 $(OBJECT)/graph.o: graph.cpp graph.h
+	$(CXX) $(CFLAGS) -c -o $@ $<
+
+$(OBJECT)/server.o: server.cpp server.h
+	$(CXX) $(CFLAGS) -c -o $@ $<
+
+$(OBJECT)/simulator.o: simulator.cpp simulator.h
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
 .PHONY: clean

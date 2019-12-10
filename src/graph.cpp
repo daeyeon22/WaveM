@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <random>
 
 using namespace std;
 
@@ -23,13 +24,13 @@ void Vertex::setInfo(int _id, int _x, int _y, int _stat)
     id = _id;
     x = _x;
     y = _y;
-    status = _stat;
+    stat = _stat;
 }
 
 
 void Vertex::updateStat(int stat)
 {
-    status = stat;
+    stat = stat;
 }
 
 
@@ -105,7 +106,7 @@ void Graph::init(int i_width, int i_height, bool **map)
         for(int y = 0; y < height; y++)
         {
             int id = x + y * width;
-            int stat = map[x][y] ? EMPTY : BLOCKED;
+            int stat = map[x][y] ? Vertex::EMPTY : Vertex::BLOCKED;
             vertices[id].setInfo(id, x, y, stat);
 
 
@@ -115,7 +116,7 @@ void Graph::init(int i_width, int i_height, bool **map)
 
             // if the vertex is blocked,
             // no edge exists
-            if(stat == BLOCKED)
+            if(stat == Vertex::BLOCKED)
                 continue;
 
             for(auto it : delta)
@@ -185,3 +186,12 @@ void Graph::removeEdge(int v1, int v2)
     }
 }
 
+int Graph::randVertex(int stat)
+{
+    while(true)
+    {
+        int vid = rand() % vertices.size();
+        if(getVertex(vid)->stat == stat)
+            return vid;
+    }
+}

@@ -3,12 +3,12 @@
 #include <string>
 #include <algorithm>
 
-#include "CImg.h"
 #include "bitmap.h"
 #include "graph.h"
+#include "router.h"
+#include "server.h"
+#include "simulator.h"
 
-
-using namespace cimg_library;
 using namespace std;
 
 char* getCmdOption(char ** begin, char ** end, const std::string & option)
@@ -73,40 +73,16 @@ int main(int argc, char** argv) {
 
 
     // initialize graph
-    graph->init(g_width, g_height, map);
+    WMGraph->init(g_width, g_height, map);
     cout << "[Rep] Graph Initialization Done (" << g_width << " " << g_height << ")" <<  endl;
-    //
-    
-
-    static const unsigned char  yellow[] = { 255,255,0 }, white[] = { 255,255,255 },
-                 green[] = { 0,255,0 }, blue[] = { 120,200,255 },
-                 purple[] = { 255,100,255 }, black[] = { 0,0,0 };
-
+  
+    WMServer->initClients(20);
+    cout << "[Rep] Server Initialization Done" << endl;
+    WMSim->initDisp(g_width, g_height, map);
+    cout << "[Rep] Simulator Initialization Done" << endl;
 
 
-    CImgDisplay disp( g_width, g_height, "WaveM Self-driving Simulator (Made by DYKim)");
-    CImg<unsigned char> background( g_width, g_height, 1, 3, 255);
-
-
-    // draw bitmap img
-    for(int i=0; i < bmp.width(); i++)
-    {
-        for(int j=0; j < bmp.height(); j++)
-        {
-            if(map[i][j])
-                background.draw_point(i, j, black, 0.9);
-        }
-    }
-
-    background.display(disp);
-
-    while (!disp.is_closed() && !disp.is_keyESC() && !disp.is_keyQ()) {
-        CImgDisplay::wait(disp);
-    }
-    
-
-
-
+    WMSim->simFramePerSec();
 
     cout << "[Rep] Program Finished" << endl;
 }
