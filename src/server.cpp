@@ -1,5 +1,6 @@
 #include "server.h"
 #include "graph.h"
+#include <boost/format.hpp>
 
 ostream& operator << (ostream& os, Vertex* vtx)
 {
@@ -40,13 +41,13 @@ void Server::initClients(int numClients)
     {
 
         Vertex* vBeg = WMGraph->getVertex(WMGraph->randVertex(Vertex::EMPTY));
-        Vertex* vEnd = WMGraph->getVertex(WMGraph->randVertex(Vertex::EMPTY));
+        //Vertex* vEnd = WMGraph->getVertex(WMGraph->randVertex(Vertex::EMPTY));
 
         clients[i].setID(i);
         clients[i].updateStat(Client::IDLE);
         clients[i].setCurLoc(vBeg->x, vBeg->y);
-        clients[i].setDesLoc(vEnd->x, vEnd->y);
-        clients[i].createPath();
+        //clients[i].setDesLoc(vEnd->x, vEnd->y);
+        //clients[i].createPath();
     }
 }
 
@@ -58,10 +59,67 @@ void Server::next()
     }
 }
 
+void Server::initTasks(int _numTasks)
+{
+    // initialize 100 tasks (pick random) 
+    for(int t=0; t < _numTasks; t++)
+    {
+        int d_v = WMGraph->randVertex(Vertex::EMPTY);
+        tasks.push(d_v);
+    }
+}
+
+int Server::numTasks()
+{
+    return tasks.size();
+}
+
+int Server::numIDLEs()
+{
+    return idles.size();
+}
+
+int Server::getNextTask()
+{
+    int task = tasks.front();
+    tasks.pop();
+    return task;
+}
+
+int Server::getIDLEClient()
+{
+    int clientID = idles.front();
+    idles.pop();
+    return clientID;
+}
+
+
+void Server::taskManage()
+{
+    while(numTasks() > 0 && numIDLEs() > 0)
+    {
+        Vertex* vEnd    = WMGraph->getVertex(getNextTask());
+        Client* client  = getClient(getIDLEClient()); 
+        
+        client->setDesLoc(vEnd->x, vEnd->y);
+        client->createPath();
+    }
+}
+
+void Server::toIDLE(int id)
+{
+    idles.push(id);
+}
 
 
 
 /* Client */
+bool Client::arrival()
+{
+    return (c_x == d_x && c_y == d_y) ? true : false;
+}
+
+
 void Client::next()
 {
     // do something if job exists
@@ -76,24 +134,43 @@ void Client::next()
         {
             case Vertex::EMPTY:
                 path.pop();
+                
+                // goto next
                 c_x = nextVtx->x;
                 c_y = nextVtx->y;
+                
+                // map update
                 currVtx->updateStat(Vertex::EMPTY);
                 nextVtx->updateStat(Vertex::NONEMPTY);
                 
-                if(c_x == d_x && c_y == d_y)
-                    stat = Client::IDLE;
+                // stat update
+                if(arrival())
+                    updateStat(Client::IDLE);
                 else
-                    stat = Client::BUSY;
+                    updateStat(Client::BUSY);
                 
                 break;
+
             case Vertex::NONEMPTY:
-                stat = (stat == Client::WAITING) ? Client::BLOCKED : Client::WAITING;
+                
+                if(stat == Client::WAITING)
+                {
+                    if(waitCnt-- < 0)
+                    {
+                        updateStat(Client::BLOCKED);
+                    }
+                }   
+                else 
+                    updateStat(Client::WAITING);
                 //cout << "[Rep]"; 
                 
                 break;
             case Vertex::BLOCKED:
-                stat = (stat == Client::WAITING) ? Client::BLOCKED : Client::WAITING;
+                
+                if(stat == Client::WAITING)
+                    updateStat(Client::BLOCKED);
+                else 
+                    updateStat(Client::WAITING);
                 cout << "Exception case1" << endl;
                 //exit(0);
                 break;
@@ -102,9 +179,13 @@ void Client::next()
     else if(stat == Client::BLOCKED)
     {
         //
-        if(createPath())
-            stat = Client::BUSY;
+        if(createPath()) updateStat(Client::BUSY);
     }
+}
+
+bool Client::idle()
+{
+    return stat == Client::IDLE ? true : false;
 }
 
 void Client::setID(int _id)
@@ -122,8 +203,36 @@ void Client::setDesLoc(int x, int y)
     d_x = x, d_y = y;
 }
 
+string statToStr(int stat)
+{
+    switch(stat)
+    {
+        case Client::BUSY: return "BUSY";
+        case Client::IDLE: return "IDLE";
+        case Client::BLOCKED: return "BLOCKED";
+        case Client::WAITING: return "WAITING";
+    }
+
+    return "";
+}
+
+
 void Client::updateStat(int u_stat)
 {
+    if(stat!=u_stat)
+    {
+        cout << boost::format("[Rep] client%d status from %s to %s\n") % id % statToStr(stat) % statToStr(u_stat);
+        if(u_stat == Client::WAITING)
+        {
+            waitCnt = rand() % 10;
+        }
+    }
+    
+    if(u_stat == Client::IDLE)
+    {
+        WMServer->toIDLE(id);
+    }
+    
     stat = u_stat;
 }
 
@@ -141,7 +250,7 @@ bool Client::createPath()
     cout << "[Rep] Find shortest path from " << WMGraph->getVertex(start) << " to " << WMGraph->getVertex(end) << endl; 
     if(start == end)
     {
-        stat = Client::IDLE;
+        updateStat(Client::IDLE);
         cout << "[Rep] already arrived" << endl;
     }
     else
@@ -154,8 +263,7 @@ bool Client::createPath()
             c_x = nextVtx->x;
             c_y = nextVtx->y;
             nextVtx->updateStat(Vertex::NONEMPTY);
-            
-            stat = Client::BUSY;
+            updateStat(Client::BUSY);
         }
     }
     

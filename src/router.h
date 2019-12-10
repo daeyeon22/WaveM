@@ -65,7 +65,8 @@ class Router
         //delete estCost;
         //delete parent;
     }
-    
+   
+    void    clearQueue(){ PQ = priority_queue<pair<int, double>, vector<pair<int, double>>, Sort>(); }
     void    init(int size);
     void    update(int cur, int par, int tar);
     void    pushNeighbors(int node, int end);

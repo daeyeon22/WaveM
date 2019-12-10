@@ -28,9 +28,9 @@ void Vertex::setInfo(int _id, int _x, int _y, int _stat)
 }
 
 
-void Vertex::updateStat(int stat)
+void Vertex::updateStat(int _stat)
 {
-    stat = stat;
+    stat = _stat;
 }
 
 

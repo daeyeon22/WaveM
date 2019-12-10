@@ -76,13 +76,13 @@ int main(int argc, char** argv) {
     WMGraph->init(g_width, g_height, map);
     cout << "[Rep] Graph Initialization Done (" << g_width << " " << g_height << ")" <<  endl;
   
+    WMServer->initTasks(100);
     WMServer->initClients(20);
     cout << "[Rep] Server Initialization Done" << endl;
+    
     WMSim->initDisp(g_width, g_height, map);
     cout << "[Rep] Simulator Initialization Done" << endl;
 
-
     WMSim->simFramePerSec();
-
     cout << "[Rep] Program Finished" << endl;
 }

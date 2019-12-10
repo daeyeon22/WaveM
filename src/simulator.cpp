@@ -92,13 +92,8 @@ void Simulator::simFramePerSec()
         // Allow the user to toggle fullscreen mode, by pressing CTRL+F.
         if (disp.is_keyCTRLLEFT() && disp.is_keyF()) disp.resize(WMGraph->getWidth()*2,WMGraph->getHeight()*2,false).toggle_fullscreen(false);
 
-
+        WMServer->taskManage();
         WMServer->next();
-
-
-        
-
-
     }
 
 

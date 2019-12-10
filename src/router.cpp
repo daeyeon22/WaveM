@@ -18,6 +18,7 @@ void Router::init(int size)
     actCost = vector<double>(size, DBL_MAX);
     estCost = vector<double>(size, DBL_MAX);
     parent = vector<int>(size, -1);
+    clearQueue();
 }
 
 void Router::update(int cur, int par, int end)
@@ -76,15 +77,12 @@ Path Router::findShortestPath(int start, int end)
     parent[start] = start;
     push(start);
 
-
     // astar search
     while(!isEmpty())
     {
         int current = pop();
 
         //cout << "Current : " << WMGraph->getVertex(current) << endl;
-
-
         if(current == end)
         {
             // arrival!
@@ -118,7 +116,6 @@ Path Router::findShortestPath(int start, int end)
     {
         cout << "No path exist" << endl; 
     }
-
 
     return path;
 
