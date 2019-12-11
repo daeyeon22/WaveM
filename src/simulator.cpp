@@ -87,7 +87,7 @@ void Simulator::simFramePerSec()
         }
 
 
-        img0.resize(disp.display(img).resize(false).wait(1));
+        img0.resize(disp.display(img).resize(false).wait(0.1));
 
         // Allow the user to toggle fullscreen mode, by pressing CTRL+F.
         if (disp.is_keyCTRLLEFT() && disp.is_keyF()) disp.resize(WMGraph->getWidth()*2,WMGraph->getHeight()*2,false).toggle_fullscreen(false);
