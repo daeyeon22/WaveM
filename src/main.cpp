@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "bitmap.h"
+#include "bitmap_image.hpp"
 #include "graph.h"
 #include "router.h"
 #include "server.h"
@@ -42,27 +43,32 @@ int main(int argc, char** argv) {
         exit(0);
     }
 
-  
+    ///////////have to see
+    
+    /*
     // load the file. The constructor now does most of the work
-    BitMap bmp(fileName.c_str()); 
-
-    // get the vector <R,G,B> for the pixel at (1,1)
-    std::vector<unsigned int> example_vector = bmp.getPixel(1,1);
+    BitMap bmp(fileName.c_str());
+    */
+    
+    bitmap_image bmp(fileName.c_str());
 
     int g_width = bmp.width();
     int g_height = bmp.height();
-    bool** map = new bool*[bmp.width()];
 
+    bool** map = new bool*[g_width];
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
-    for(int i=0; i < bmp.width(); i++)
+    for(int i=0; i < g_width; i++)
     {
-        map[i] = new bool[bmp.height()];
+        map[i] = new bool[g_height];
 
-        for(int j=0; j < bmp.height(); j++)
+        for(int j=0; j < g_height; j++)
         {
-            vector<unsigned> RGB = bmp.getPixel(i,j);
+            //vector<unsigned> RGB = bmp.getPixel(i,j);
+            rgb_t RGB = bmp.get_pixel(i,j);
 
-            if(RGB[0] == 0 && RGB[1] == 0 && RGB[2] == 0)
+            //if(RGB[0] == 0 && RGB[1] == 0 && RGB[2] == 0)
+            if(RGB.red == 0 && RGB.green == 0 && RGB.blue == 0)
                 map[i][j] = false;
             else
                 map[i][j] = true;
@@ -70,7 +76,7 @@ int main(int argc, char** argv) {
         }
 
     }
-
+    //////////end here
 
     // initialize graph
     WMGraph->init(g_width, g_height, map);

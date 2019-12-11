@@ -23,7 +23,7 @@ class BitMap {
 
         int m_rowSize;
         int m_pixelArraySize;
-
+    
         unsigned char* m_pixelData;
 
         char * m_copyname;
