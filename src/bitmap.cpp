@@ -74,9 +74,7 @@ BitMap::BitMap( const char * filename) {
         inf>>hex>>a;
         m_pixelData[i]=a; 
     }
-
-
-
+    
 }
 
 BitMap::~BitMap() {
@@ -100,10 +98,14 @@ std::vector<unsigned int> BitMap::getPixel(int x, int y) {
 
         y = m_height -1- y; //to flip things
         //std::cout<<"y: "<<y<<" x: "<<x<<"\n";
-        v[0] = (unsigned int) ( m_pixelData[ m_rowSize*y+3*x+2 ] ); //red
-        v[1] = (unsigned int) ( m_pixelData[ m_rowSize*y+3*x+1 ] ); //greed
-        v[2] = (unsigned int) ( m_pixelData[ m_rowSize*y+3*x+0 ] ); //blue
-
+        //origin code
+        //v[0] = (unsigned int) ( m_pixelData[ (m_rowSize)*y+3*x+2 ] ); //red
+        //v[1] = (unsigned int) ( m_pixelData[ (m_rowSize)*y+3*x+1 ] ); //greed
+        //v[2] = (unsigned int) ( m_pixelData[ (m_rowSize)*y+3*x+0 ] ); //blue
+ 
+        v[0] = (unsigned int) ( m_pixelData[ (m_rowSize) * y + 3 * (x-1) + 2 ] ); //red
+        v[1] = (unsigned int) ( m_pixelData[ (m_rowSize) * y + 3 * (x-1) + 1 ] ); //greed
+        v[2] = (unsigned int) ( m_pixelData[ (m_rowSize) * y + 3 * (x-1) + 0 ] ); //blue
 
         return v;
     }
