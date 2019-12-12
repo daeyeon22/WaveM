@@ -42,22 +42,15 @@ int main(int argc, char** argv) {
         cout << "-map option must be required" << endl;
         exit(0);
     }
-
-    ///////////have to see
     
-    /*
-    // load the file. The constructor now does most of the work
-    BitMap bmp(fileName.c_str());
-    */
-    
+    //load bitmap image
     bitmap_image bmp(fileName.c_str());
 
     int g_width = bmp.width();
     int g_height = bmp.height();
-
     bool** map = new bool*[g_width];
     
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //make boolean map
     for(int i=0; i < g_width; i++)
     {
         map[i] = new bool[g_height];
@@ -76,14 +69,13 @@ int main(int argc, char** argv) {
         }
 
     }
-    //////////end here
 
     // initialize graph
     WMGraph->init(g_width, g_height, map);
     cout << "[Rep] Graph Initialization Done (" << g_width << " " << g_height << ")" <<  endl;
   
     WMServer->initTasks(100);
-    WMServer->initClients(20);
+    WMServer->initClients(30);
     cout << "[Rep] Server Initialization Done" << endl;
     
     WMSim->initDisp(g_width, g_height, map);
