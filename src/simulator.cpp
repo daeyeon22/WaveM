@@ -74,9 +74,10 @@ void Simulator::simFramePerSec()
             int x2 = client->getX()+4;
             int y1 = client->getY()-4;
             int y2 = client->getY()+4;
+            string tag = "client" + to_string(i);
 
             img.draw_rectangle( x1, y1, x2, y2, colors[i%9], 1 );
-
+            img.draw_text( x1, y1 + 5, tag.c_str(), black, NULL, 1, 10 );
             for(auto it=client->begin(); it != client->end(); it++)
             {
                 int x = WMGraph->getVertex(*it)->x;

@@ -8,14 +8,14 @@ OBJECT = ../build
 CXXOPTS = -m64 -O3 -fopenmp -fPIC -fno-strict-aliasing -fexceptions -fpermissive -DNDEBUG -DIL_STD -Wno-ctor-dtor-privacy
 CFLAGS = -std=c++11 -static-libstdc++ -O3 -fopenmp -fpermissive -DNDEBUG -DIL_STD -Wno-ctor-dtor-privacy $(LIBINCLUDE)
 
-LIBINCLUDE = -I$(SRCHASH)/include -I$(BOOST)/include 
+LIBINCLUDE = -I$(SRCHASH)/include -I$(BOOST)/include  
 
 
-LINKCFLAGS = $(CFLAGS) -static-libstdc++ -lX11 -ldl -lm -lpthread
+LINKCFLAGS = $(CFLAGS) -static-libstdc++ -lX11 -ldl -lm -lpthread#$(LIBGOMP)
 
 BOOST   = ../lib/boost
 SRCHASH = ../lib/sparsehash
-LIBGOMP = -L../lib/libgomp/libgomp.a -static
+LIBGOMP = -L../lib/gomp/libgomp.a -static
 
 
 SRC = 	$(OBJECT)/main.o \
@@ -48,8 +48,8 @@ $(EXE): $(SRC)
 $(OBJECT)/main.o: main.cpp
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-$(OBJECT)/bitmap.o: bitmap.cpp bitmap.h
-	$(CXX) $(CFLAGS) -c -o $@ $<
+#$(OBJECT)/bitmap.o: bitmap.cpp bitmap.h
+#	$(CXX) $(CFLAGS) -c -o $@ $<
 
 $(OBJECT)/router.o: router.cpp router.h
 	$(CXX) $(CFLAGS) -c -o $@ $<

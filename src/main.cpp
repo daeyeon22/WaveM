@@ -3,7 +3,6 @@
 #include <string>
 #include <algorithm>
 
-#include "bitmap.h"
 #include "bitmap_image.hpp"
 #include "graph.h"
 #include "router.h"
@@ -31,7 +30,10 @@ int main(int argc, char** argv) {
 
     
     string fileName;
-    
+    int numClients  = 0;
+    int numTasks    = 0;
+
+
     if( cmdOptionExists(argv, argv+argc, "-map"))
     {        
         fileName =  getCmdOption(argv, argv+argc, "-map");
@@ -42,6 +44,28 @@ int main(int argc, char** argv) {
         cout << "-map option must be required" << endl;
         exit(0);
     }
+
+    if( cmdOptionExists(argv, argv+argc, "-client"))
+    {        
+        numClients =  atoi(getCmdOption(argv, argv+argc, "-client"));
+        cout << "[Arg] -client :"  << numClients << endl;
+    }
+    else
+    {
+    }
+
+    if( cmdOptionExists(argv, argv+argc, "-task"))
+    {        
+        numTasks =  atoi(getCmdOption(argv, argv+argc, "-task"));
+        cout << "[Arg] -task :"  << numTasks << endl;
+    }
+    else
+    {
+    }
+
+
+
+
 
     ///////////have to see
     
@@ -82,8 +106,8 @@ int main(int argc, char** argv) {
     WMGraph->init(g_width, g_height, map);
     cout << "[Rep] Graph Initialization Done (" << g_width << " " << g_height << ")" <<  endl;
   
-    WMServer->initTasks(100);
-    WMServer->initClients(20);
+    WMServer->initTasks(numTasks);
+    WMServer->initClients(numClients);
     cout << "[Rep] Server Initialization Done" << endl;
     
     WMSim->initDisp(g_width, g_height, map);
