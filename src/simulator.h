@@ -26,7 +26,7 @@ class Simulator
   public:
     static Simulator* inst();
 
-    void initDisp(int width, int height, bool** map);
+    void initDisp(); //int width, int height, bool** map);
     void showCurState();
     void simFramePerSec();
 

@@ -19,7 +19,6 @@ LIBGOMP = -L../lib/gomp/libgomp.a -static
 
 
 SRC = 	$(OBJECT)/main.o \
-		$(OBJECT)/bitmap.o \
 		$(OBJECT)/router.o \
 		$(OBJECT)/server.o \
 		$(OBJECT)/simulator.o \
@@ -65,7 +64,7 @@ $(OBJECT)/simulator.o: simulator.cpp simulator.h
 
 .PHONY: clean
 clean: 
-	/bin/rm -f ./objects/*.o 2> /dev/null;  /bin/rm -f $(EXE) 2> /dev/null; /bin/rm -f defreader defwriter lefreader lefwriter 2> /dev/null; /bin/rm -f *.log;
+	/bin/rm -f $(OBJECT)/*.o 2> /dev/null;  /bin/rm -f $(EXE) 2> /dev/null; /bin/rm -f defreader defwriter lefreader lefwriter 2> /dev/null; /bin/rm -f *.log;
 
 
 

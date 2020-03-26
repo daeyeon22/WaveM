@@ -1,0 +1,42 @@
+MAP /home/dykim/WaveM/map/map.bmp
+NUM_CLIENT 10
+CLIENT client_1
+    SIZE 2 2
+    SPEED 4
+END
+CLIENT client_2
+    SIZE 4 2
+    SPEED 3
+END
+CLIENT client_3
+    SIZE 3 3
+    SPEED 5
+END
+CLIENT client_4
+    SIZE 5 2
+    SPEED 2
+END
+CLIENT client_5
+    SIZE 2 4
+    SPEED 2
+END
+CLIENT client_6
+    SIZE 5 3
+    SPEED 1
+END
+CLIENT client_7
+    SIZE 3 3
+    SPEED 1
+END
+CLIENT client_8
+    SIZE 4 3
+    SPEED 3
+END
+CLIENT client_9
+    SIZE 6 5
+    SPEED 1
+END
+CLIENT client_10
+    SIZE 8 5
+    SPEED 1
+END

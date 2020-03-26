@@ -33,7 +33,12 @@ class Router
     vector<double> actCost;
     vector<double> estCost;
     vector<int> parent;
-   
+
+    int spacingX;
+    int spacingY;
+    int client;
+
+
     // priority queue sorting function
     struct Sort
     {
@@ -66,15 +71,17 @@ class Router
         //delete parent;
     }
    
+    void    setSpacing(int _spacingX, int _spacingY);
     void    clearQueue(){ PQ = priority_queue<pair<int, double>, vector<pair<int, double>>, Sort>(); }
-    void    init(int size);
+    void    init(int size, int _client);
     void    update(int cur, int par, int tar);
     void    pushNeighbors(int node, int end);
     void    push(int node);
     int     pop();
     bool    isVisited(int node);
     bool    isEmpty();
-   
+    bool    checkSpacing(int node);
+
     Path    findShortestPath(int start, int end);
 
 };

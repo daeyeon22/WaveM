@@ -26,14 +26,30 @@ bool cmdOptionExists(char** begin, char** end, const std::string& option)
     return std::find(begin, end, option) != end;
 }
 
+
+
 int main(int argc, char** argv) {
 
-    
-    string fileName;
+   
+    string mapFileName;
+    string configFileName;
     int numClients  = 0;
     int numTasks    = 0;
 
 
+    if(cmdOptionExists(argv, argv+argc, "-f"))
+    {
+        configFileName = getCmdOption(argv, argv+argc, "-f");
+        cout << "[Arg] configure file : " << configFileName << endl;
+    }
+    if( cmdOptionExists(argv, argv+argc, "-map"))
+    {        
+        mapFileName =  getCmdOption(argv, argv+argc, "-map");
+        cout << "[Arg] -map :"  << mapFileName << endl;
+    }
+
+
+    /*
     if( cmdOptionExists(argv, argv+argc, "-map"))
     {        
         fileName =  getCmdOption(argv, argv+argc, "-map");
@@ -62,14 +78,13 @@ int main(int argc, char** argv) {
     else
     {
     }
+    */
 
 
 
-
-
-    
+    /*
     //load bitmap image
-    bitmap_image bmp(fileName.c_str());
+    bitmap_image bmp(mapFileName.c_str());
 
     int g_width = bmp.width();
     int g_height = bmp.height();
@@ -97,13 +112,17 @@ int main(int argc, char** argv) {
 
     // initialize graph
     WMGraph->init(g_width, g_height, map);
-    cout << "[Rep] Graph Initialization Done (" << g_width << " " << g_height << ")" <<  endl;
-  
-    WMServer->initTasks(numTasks);
-    WMServer->initClients(numClients);
+    */
+    WMGraph->readImgMap(mapFileName.c_str());
+ 
+    WMServer->initServer();
+    WMServer->readConfig(configFileName.c_str());
     cout << "[Rep] Server Initialization Done" << endl;
+
+    //WMServer->initTasks(numTasks);
+    //WMServer->initClients(numClients);
     
-    WMSim->initDisp(g_width, g_height, map);
+    WMSim->initDisp(); //WMGraph->getWidth(), WMGraph->getHeight()g_width, g_height, map);
     cout << "[Rep] Simulator Initialization Done" << endl;
 
     WMSim->simFramePerSec();

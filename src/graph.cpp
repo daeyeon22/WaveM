@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include "bitmap_image.hpp"
 
 using namespace std;
 
@@ -28,9 +29,10 @@ void Vertex::setInfo(int _id, int _x, int _y, int _stat)
 }
 
 
-void Vertex::updateStat(int _stat)
+void Vertex::updateStat(int _stat, int _client)
 {
     stat = _stat;
+    client = _client;
 }
 
 
@@ -51,6 +53,37 @@ void Vertex::removeAdj(int v)
         adj.erase(it);
     }
 }
+
+void Graph::updateStat(int stat, int lx, int ly, int ux, int uy, int client)
+{
+    for(Vertex* vtx : getInside(lx, ly, ux, uy))
+        vtx->updateStat(stat, client);
+}
+
+
+
+vector<Vertex*> Graph::getInside(int lx, int ly, int ux, int uy)
+{
+    vector<Vertex*> container;
+
+    lx = max(0, lx);
+    ux = min(width-1, ux);
+    ly = max(0, ly);
+    uy = min(height-1, uy);
+
+    //cout << "(" << lx << " " << ly << ") (" << ux << " " << uy << ")" << endl;
+
+    for(int x=lx; x <= ux; x++)
+    {
+        for(int y=ly; y <= uy; y++)
+        {
+            container.push_back(getVertex(getIndex(x, y)));
+        }
+    }
+
+    return container;
+}
+
 
 
 Vertex* Graph::getVertex(int id)
@@ -89,7 +122,45 @@ double Graph::calcDist(int v1, int v2, bool calcManh)
 }
 
 
-void Graph::init(int i_width, int i_height, bool **map)
+void Graph::readImgMap(const char* inFile)
+{
+
+    //load bitmap image
+    bitmap_image bmp(inFile);
+
+    int g_width = bmp.width();
+    int g_height = bmp.height();
+    _map = new bool*[g_width];
+
+    //make boolean map
+    for(int i=0; i < g_width; i++)
+    {
+        _map[i] = new bool[g_height];
+
+        for(int j=0; j < g_height; j++)
+        {
+            //vector<unsigned> RGB = bmp.getPixel(i,j);
+            rgb_t RGB = bmp.get_pixel(i,j);
+
+            //if(RGB[0] == 0 && RGB[1] == 0 && RGB[2] == 0)
+            if(RGB.red == 0 && RGB.green == 0 && RGB.blue == 0)
+                _map[i][j] = false;
+            else
+                _map[i][j] = true;
+
+        }
+
+    }
+
+    // initialize graph
+    init(g_width, g_height);
+    cout << "[Rep] Graph Initialization Done (" << g_width << " " << g_height << ")" <<  endl;
+
+}
+
+
+
+void Graph::init(int i_width, int i_height)
 {
    
     width = i_width;
@@ -106,7 +177,7 @@ void Graph::init(int i_width, int i_height, bool **map)
         for(int y = 0; y < height; y++)
         {
             int id = x + y * width;
-            int stat = map[x][y] ? Vertex::EMPTY : Vertex::BLOCKED;
+            int stat = _map[x][y] ? Vertex::EMPTY : Vertex::BLOCKED;
             vertices[id].setInfo(id, x, y, stat);
 
 
@@ -186,12 +257,31 @@ void Graph::removeEdge(int v1, int v2)
     }
 }
 
-int Graph::randVertex(int stat)
+int Graph::randVertex(int stat, int spacingX, int spacingY)
 {
     while(true)
     {
         int vid = rand() % vertices.size();
-        if(getVertex(vid)->stat == stat)
-            return vid;
+        Vertex* current = getVertex(vid);
+        if(current->stat == Vertex::EMPTY)
+        {
+            int lx = current->x - spacingX;
+            int ux = current->x + spacingX;
+            int ly = current->y - spacingY;
+            int uy = current->y + spacingY;
+
+            bool valid = true;
+            for(Vertex* vertex : getInside(lx, ly, ux, uy))
+            {
+                if(vertex->stat != Vertex::EMPTY)
+                {
+                    valid =  false;
+                    break;
+                }
+            }
+            if(valid)
+                return vid;
+        }
     }
 }
+

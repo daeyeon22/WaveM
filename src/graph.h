@@ -4,11 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <climits>
+
 //#define BLOCKED -1212
 //#define EMPTY -13224
 //#define NONEMPTY -14543
 #define WMGraph Graph::inst()
-
+#define NONE INT_MIN
 
 using namespace std;
 
@@ -32,6 +34,9 @@ struct Vertex
     int id;
     int x,y; 
     int stat;
+    
+    int client;         // occupied
+
 
     vector<int> adj;
 
@@ -44,7 +49,7 @@ struct Vertex
     ostream& operator << (ostream& os) { return os << "(" << x << " " << y << ")"; }
 
     void setInfo(int _id, int _x, int _y, int _stat);
-    void updateStat(int _stat); 
+    void updateStat(int _stat, int _client=NONE); 
     void addAdj(int v);
     void removeAdj(int v);
 };
@@ -55,7 +60,7 @@ class Graph
     
   private:
     static Graph* instance;
-      
+    bool** _map;  
     int width, height;
     
     // objects
@@ -71,16 +76,21 @@ class Graph
 
     int getWidth(){ return width; }
     int getHeight(){ return height; }
-    
+    bool** get2DMap(){ return _map; } 
     Vertex* getVertex(int id);
     Edge*   getEdge(int v1, int v2);
     int     getIndex(int x, int y);
-    int     randVertex(int stat);    
-    void    init(int width, int height, bool **map);
+    int     randVertex(int stat = Vertex::EMPTY, int spacingX = 0, int spacingY = 0);    
+    void    readImgMap(const char* inFile);
+
+    vector<Vertex*> getInside(int lx, int ly, int ux, int uy);
+
+
+    void    init(int width, int height);
     void    createEdge(int v1, int v2, double cost);
     void    removeEdge(int v1, int v2);
-
-    double calcDist(int v1, int v2, bool calcManh);
+    void    updateStat(int stat, int lx, int ly, int ux, int uy, int client=NONE);
+    double  calcDist(int v1, int v2, bool calcManh);
 };
 
 #endif

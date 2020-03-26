@@ -1,11 +1,41 @@
 #include "graph.h"
 #include "router.h"
+#include "server.h"
+#include <cmath>
+
+//#define DEBUG
+
+bool Router::checkSpacing(int node)
+{
+    Vertex* current = WMGraph->getVertex(node);
+
+    int lx = current->x - spacingX;
+    int ux = current->x + spacingX;
+    int ly = current->y - spacingY;
+    int uy = current->y + spacingY;
+
+#ifdef DEBUG
+    cout << "(" << current->x << " " << current->y << ") -> (" << lx << " " << ly << ") (" << ux << " " << uy << ")" << endl;
+#endif
+    for(Vertex* vertex : WMGraph->getInside(lx, ly, ux, uy))
+    {
+        if(vertex->stat == Vertex::BLOCKED)
+        {
+            return false;
+        }
+        else if(vertex->stat == Vertex::NONEMPTY)
+        {
+            if(vertex->client != client)
+                return false;
+        }
+
+    }
 
 
-//ostream& operator << (ostream& os, Vertex* vtx)
-//{
-//    return os << "(" << vtx->x << " " << vtx->y << ")";
-//}
+    return true;
+}
+
+
 
 bool Router::isVisited(int node)
 {
@@ -13,12 +43,17 @@ bool Router::isVisited(int node)
     return parent[node] == -1 ? false : true;
 }
 
-void Router::init(int size)
+void Router::init(int size, int _client)
 {
+    
     actCost = vector<double>(size, DBL_MAX);
     estCost = vector<double>(size, DBL_MAX);
     parent = vector<int>(size, -1);
     clearQueue();
+    client = _client;
+
+    spacingX = ceil(1.0 * WMServer->getClient(client)->getSizeX()/2);
+    spacingY = ceil(1.0 * WMServer->getClient(client)->getSizeY()/2);
 }
 
 void Router::update(int cur, int par, int end)
@@ -46,13 +81,16 @@ int Router::pop()
 
 void Router::pushNeighbors(int node, int end)
 {
-    
     for(auto neighbor : WMGraph->getVertex(node)->adj)
     {
         if(isVisited(neighbor))
             continue;
+        if(!checkSpacing(neighbor))
+            continue;
 
-        if(WMGraph->getVertex(neighbor)->stat == Vertex::EMPTY)
+        Vertex* nextVtx = WMGraph->getVertex(neighbor);
+        
+        if( (nextVtx->stat == Vertex::EMPTY) || (nextVtx->stat == Vertex::NONEMPTY && nextVtx->client == client) )
         {
             update(neighbor, node, end);
             push(neighbor);
@@ -76,6 +114,7 @@ Path Router::findShortestPath(int start, int end)
     estCost[start] = WMGraph->calcDist(start, end, false);
     parent[start] = start;
     push(start);
+
 
     // astar search
     while(!isEmpty())
@@ -123,6 +162,12 @@ Path Router::findShortestPath(int start, int end)
 
 
 
+
+
+void Router::setSpacing(int _spacingX, int _spacingY)
+{
+    spacingX = _spacingX, spacingY = _spacingY;
+}
 
 
 
